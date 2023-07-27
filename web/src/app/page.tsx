@@ -11,7 +11,8 @@ export default function Home() {
           <img        
             src="/cogeti-ap.png"
             alt="Logo"
-            width={400}            
+            width={400}     
+            placeholder="logo-cogeti-ap"
           />
 
           <div className='flex flex-row items-center justify-between mr-2'> {/*Div user e button*/}
@@ -40,24 +41,24 @@ export default function Home() {
 
       <div className='flex flex-wrap items-center justify-center'>
           {/*Bloco N */}        
-          <Card sala='N007'/>
-          <Card sala='N101'/>
-          <Card sala='N103'/>
-          <Card sala='N105'/>     
+          <Card sala='N007' vlan={200}/>
+          <Card sala='N101' vlan={201}/>
+          <Card sala='N103' vlan={202}/>
+          <Card sala='N105' vlan={203}/>     
 
         </div>    
 
         <div className='flex flex-wrap items-center justify-center'>
           {/*Bloco M */}        
-          <Card sala='M005'/>
-          <Card sala='M006'/>
-          <Card sala='M009'/>
-          <Card sala='M012'/>
+          <Card sala='M005' vlan={204}/>
+          <Card sala='M006' vlan={205}/>
+          <Card sala='M009' vlan={206}/>
+          <Card sala='M012' vlan={207}/>
         </div>  
 
         <div className='flex flex-wrap items-center justify-center'>
           {/*Bloco C */}        
-          <Card sala='C003'/>
+          <Card sala='C003' vlan={208}/>
         </div>       
 
       </div>

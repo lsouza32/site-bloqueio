@@ -2,9 +2,10 @@ import { Button } from "../Button";
 
 interface CardProps {
   sala: string
+  vlan: number
 }
 
-export function Card({ sala }: CardProps) {
+export function Card({ sala, vlan }: CardProps) {
   return (
 
     //Div do card
@@ -15,12 +16,12 @@ export function Card({ sala }: CardProps) {
     {/* Botões do card */}
     <div className="flex flex-col gap-4">
       
-      <Button title="Bloquear a rede" sala={sala}/>      
-      <Button title="Desligar Computadores" sala={sala}/>      
-      <Button title="Reiniciar Computradores" sala={sala}/>
-      <Button title="Iniciar em Windows" sala={sala}/>
-      <Button title="Iniciar em Linux" sala={sala}/>
-      <Button title="Limpar Prova" sala={sala}/>
+      <Button title="Bloquear a rede" sala={sala}  vlan={vlan}/>      
+      <Button title="Desligar Computadores" sala={sala} vlan={vlan}/>      
+      <Button title="Reiniciar Computadores" sala={sala} vlan={vlan}/>
+      <Button title="Iniciar em Windows" sala={sala} vlan={vlan}/>
+      <Button title="Iniciar em Linux" sala={sala} vlan={vlan}/>
+      <Button title="Limpar Prova" sala={sala} vlan={vlan}/>
 
     </div>
   </div>
