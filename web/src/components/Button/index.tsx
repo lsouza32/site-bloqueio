@@ -11,6 +11,9 @@ interface ButtonProps {
 
 export function Button({ title, sala, vlan }: ButtonProps) {
   const [showModal, setShowModal] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [actionButton, setActionButton] = useState(title);
+
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -22,7 +25,7 @@ export function Button({ title, sala, vlan }: ButtonProps) {
       const dataToSend = {
         // Coloque aqui as informações que você deseja enviar para o backend
         vlan: vlan, //vlan do lab
-        action: title //acao a ser feita
+        action: actionButton //acao a ser feita
       };
 
       // Enviar a requisição POST para o backend
@@ -47,23 +50,31 @@ export function Button({ title, sala, vlan }: ButtonProps) {
     }
   };
 
-  return (
-    <>
-      <button className="bg-yellow-50 text-white px-4 py-2 rounded hover:bg-yellow-300" 
-        type="button" 
-        onClick={handleShowModal}>
 
-        {title}
-      </button>
+    return (
+      <>
+      
+        <button className={` ${isBlocked ? 'bg-black-50 text-yellow-50 hover:bg-gray-700 ' : 'bg-yellow-50 hover:bg-yellow-300' } px-4 py-2 rounded font-sans`}
+        
+          type="button" 
+          onClick={handleShowModal}>
+  
+          {actionButton}
+        </button>
+  
+      {showModal && 
+        <ModalConfirm 
+          setShowModal={setShowModal}
+          setIsBlocked={setIsBlocked}
+          setActionButton= {setActionButton}
+          titleAction={actionButton}
+          sala={sala} 
+          handleSubmit= {handleSubmit}/> 
+      }
+  
+    </>
+    );
+  
 
-    {showModal && 
-      <ModalConfirm 
-        setShowModal={setShowModal}
-        titleAction={title}
-        sala={sala} 
-        handleSubmit= {handleSubmit}/> 
-    }
-
-  </>
-  );
+ 
 }

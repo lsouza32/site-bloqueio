@@ -25,6 +25,10 @@ app.post('/api/gerenciaLab', (req, res) => {
       fs.writeFileSync(`comandos/${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
     }
 
+    if(action === 'Desbloquear rede' ){ //Cria o arquivo somente com nome da vlan
+      removeFiles('comandos', `${vlan}.html`)
+    }
+
     if(action === 'Limpar Prova' ){ //Cria o arquivo somente com nome da vlan
       const fileContent = ''; // Conteudo do arquivo
       fs.writeFileSync(`comandos/limpa-${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.

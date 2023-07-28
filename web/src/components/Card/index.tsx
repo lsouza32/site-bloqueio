@@ -11,7 +11,7 @@ export function Card({ sala, vlan }: CardProps) {
     //Div do card
     <div className="bg-white-100 border-gray-800 border-2 p-4 m-4 w-300 h-400 rounded-lg">
     {/* Nome da sala no topo do card */}
-    <h3 className="text-white font-bold text-xl mb-4">Laboratório: {sala}</h3>
+    <h3 className="text-white font-sans font-bold text-xl mb-4">Laboratório: {sala}</h3>
 
     {/* Botões do card */}
     <div className="flex flex-col gap-4">

@@ -1,41 +1,26 @@
 import { Card } from '@/components/Card'
+import { Header } from '@/components/Header'
 import { UserCircleIcon } from '@heroicons/react/24/solid'
 
 export default function Home() {
   return (
     <main className="grid min-h-screen">
       
-      <header>
-        <div className="bg-gray-50 py-8 px-10 flex justify-between items-center">
-          {/* Imagem no canto superior esquerdo - logo UTFPR */}
-          <img        
-            src="/cogeti-ap.png"
-            alt="Logo"
-            width={400}     
-            placeholder="logo-cogeti-ap"
-          />
+      <Header>
+        <div className='flex flex-row items-center justify-between mr-2'> {/*Div user e button*/}
 
-          <div className='flex flex-row items-center justify-between mr-2'> {/*Div user e button*/}
-
-            {/* Ícone de usuário e texto "Bem-vindo ..." */}             
-            <div className=" flex flex-col items-center px-20">        
-              <UserCircleIcon className="h-10 w-10 text-blue-50" />
-              <span className="mt-2">Bem-vindo...</span>
-            </div>
-
-            {/* Botão de logout no canto superior direito */}
-            <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-bold min-w-[140px] min-h-[44px] hover:bg-yellow-300 ">Logout</button>
-
+          {/* Ícone de usuário e texto "Bem-vindo ..." */}             
+          <div className=" flex flex-col items-center px-20">        
+            <UserCircleIcon className="h-10 w-10 text-blue-50" />
+            <span className="mt-2 font-alt">Bem-vindo...</span>
           </div>
 
+          {/* Botão de logout no canto superior direito */}
+          <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 ">Logout</button>
         </div>
-
-        <div className="bg-gray-100 py-4 px-10 mb-12">
-          {/*Linha zinha escuro*/}
-        </div>      
-      </header>
-
-
+      </Header>
+        
+        
       {/*body Cards*/}
       <div className=' block  min-w=[300px] min-h-[200px] items-center justify-center'>
 
