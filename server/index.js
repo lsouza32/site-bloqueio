@@ -1,6 +1,8 @@
 import express from 'express';
 import fs from 'fs'; // Módulo para manipulação de arquivos
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 import { executeShellScript } from './functions/executeSSHCommand.js'
 import { removeFiles } from './functions/removeFiles.js';
@@ -11,6 +13,12 @@ const port = 3001;
 // Middleware para interpretar o corpo da requisição como JSON
 app.use(express.json());
 app.use(cors());
+
+// Configurar rota para servir arquivos estáticos na sub-rota /comandos
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const comandosFolderPath = join(__dirname, 'comandos');
+app.use('/comandos', express.static(comandosFolderPath));
 
 
 app.post('/api/gerenciaLab', (req, res) => {
@@ -37,7 +45,6 @@ app.post('/api/gerenciaLab', (req, res) => {
     if(action === 'Iniciar em Linux' ){ //Cria o arquivo somente com nome da vlan      
       const fileContent = ''; // inicia o arquivo em branco
       fs.writeFileSync(`comandos/linux-${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
-      //--------------- criar arquivo e rodar script ????????????????????????????????????????????????????????????????????????????????????????????????
       let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`;
       executeShellScript(scriptContent);  //executa o script da linha acima
     }    
@@ -60,9 +67,7 @@ app.post('/api/gerenciaLab', (req, res) => {
 
     if(action === 'Iniciar em Windows' ){
       removeFiles('comandos', `linux-${vlan}`) // Funcao verifica se existe comandos para iniciar em linux, se tiver, ele exclui o arquivo .html
-      //--------------- criar arquivo e rodar script ?????????????????????????????????????????????????????????????????????????????????????????????????????????
-      //script a ser rodado
-      let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`;
+      let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`; //script a ser rodado
       executeShellScript(scriptContent);  //executa o script da linha acima
     }
 
@@ -76,5 +81,5 @@ app.post('/api/gerenciaLab', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(` 🚀 Servidor rodando em http://localhost:${port} 🚀`);
+  console.log(` 🚀 Servidor rodando em http://10.10.17.2:${port} 🚀`);
 });

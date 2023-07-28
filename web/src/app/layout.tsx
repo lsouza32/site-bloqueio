@@ -14,7 +14,7 @@ const baiJamjuree = BaiJamjuree({
 })
 
 export const metadata = {
-  title: 'Site Bloqueio',
+  title: 'Lab Manager',
   description:
     'Site para administrar a rede dos laboratórios',
 }

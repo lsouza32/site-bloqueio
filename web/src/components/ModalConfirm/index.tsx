@@ -54,7 +54,8 @@ export function ModalConfirm({ setShowModal, titleAction, sala, handleSubmit, se
                     if(titleAction=== 'Bloquear a rede'){
                       setIsBlocked (true)
                       setActionButton('Desbloquear rede')
-                    }else{
+                    }
+                    if(titleAction=== 'Desbloquear rede'){
                       setIsBlocked(false)
                       setActionButton('Bloquear a rede')
                     }                    
