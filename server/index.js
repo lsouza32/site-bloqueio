@@ -26,7 +26,6 @@ app.post('/api/gerenciaLab', (req, res) => {
     
     const { vlan, action } = req.body; // As informações enviadas pelo frontend
     const ip = `10.10.${vlan}.`;
-    console.log(ip)
 
     if(action === 'Bloquear a rede' ){ //Cria o arquivo somente com nome da vlan
       const fileContent = ''; // Conteudo do arquivo
@@ -66,7 +65,7 @@ app.post('/api/gerenciaLab', (req, res) => {
     }
 
     if(action === 'Iniciar em Windows' ){
-      removeFiles('comandos', `linux-${vlan}`) // Funcao verifica se existe comandos para iniciar em linux, se tiver, ele exclui o arquivo .html
+      removeFiles('comandos', `linux-${vlan}.html`) // Funcao verifica se existe comandos para iniciar em linux, se tiver, ele exclui o arquivo .html
       let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`; //script a ser rodado
       executeShellScript(scriptContent);  //executa o script da linha acima
     }
@@ -81,5 +80,5 @@ app.post('/api/gerenciaLab', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(` 🚀 Servidor rodando em http://10.10.17.2:${port} 🚀`);
+  console.log(` 🚀 Servidor rodando em http://10.10.17.4:${port} 🚀`);
 });

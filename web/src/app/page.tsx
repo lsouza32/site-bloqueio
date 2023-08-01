@@ -22,7 +22,7 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen">
+    <main className="h-screen">
       <Header/>
       <div className="flex items-center justify-center p-40">
         <form
@@ -79,6 +79,6 @@ export default function Login() {
           </div>
         </form>
       </div>
-    </div>
+    </main>
   );
 };

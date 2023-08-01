@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ModalConfirm } from "../ModalConfirm";
+import { ModalPrograms } from "../ModalPrograms";
 
 interface ButtonProps {
   title: string;
@@ -10,13 +11,18 @@ interface ButtonProps {
 }
 
 export function Button({ title, sala, vlan }: ButtonProps) {
-  const [showModal, setShowModal] = useState(false);
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
+  const [showModalPrograms, setShowModalPrograms] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [actionButton, setActionButton] = useState(title);
 
+  const handleShowMoldalPrograms = () => {
+    setShowModalPrograms(true);
+  };
 
-  const handleShowModal = () => {
-    setShowModal(true);
+
+  const handleShowModalConfirm = () => {
+    setShowModalConfirm(true);
   };
 
   const handleSubmit = async () => {
@@ -29,7 +35,7 @@ export function Button({ title, sala, vlan }: ButtonProps) {
       };
 
       // Enviar a requisição POST para o backend
-      const response = await fetch(`http://10.10.17.2:3001/api/gerenciaLab`, {
+      const response = await fetch(`http://10.10.17.4:3001/api/gerenciaLab`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,20 +63,34 @@ export function Button({ title, sala, vlan }: ButtonProps) {
         <button className={` ${isBlocked ? 'bg-black-50 text-yellow-50 hover:bg-gray-700 ' : 'bg-yellow-50 hover:bg-yellow-300' } px-4 py-2 rounded font-sans`}
         
           type="button" 
-          onClick={handleShowModal}>
+          onClick={()=>{
+            if(actionButton==='Programas Disponíveis'){
+              handleShowMoldalPrograms();
+            }else{
+              handleShowModalConfirm();
+            }
+          }}>
   
           {actionButton}
         </button>
   
-      {showModal && 
+
+      {showModalConfirm && 
         <ModalConfirm 
-          setShowModal={setShowModal}
+          setShowModalConfirm={setShowModalConfirm}
           setIsBlocked={setIsBlocked}
           setActionButton= {setActionButton}
           titleAction={actionButton}
           sala={sala} 
           handleSubmit= {handleSubmit}/> 
       }
+
+      {showModalPrograms && 
+        <ModalPrograms 
+        sala={sala}
+        setShowModalPrograms={setShowModalPrograms}/>
+      }
+
   
     </>
     );

@@ -11,7 +11,7 @@ export default function Home() {
 
           {/* Ícone de usuário e texto "Bem-vindo ..." */}             
           <div className=" flex flex-col items-center px-20">        
-            <UserCircleIcon className="h-10 w-10 text-blue-50" />
+            <UserCircleIcon className="h-10 w-10 text-black-50" />
             <span className="mt-2 font-alt">Bem-vindo...</span>
           </div>
 
