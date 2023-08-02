@@ -1,11 +1,26 @@
 import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
 import { UserCircleIcon } from '@heroicons/react/24/solid'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function Home() {
-  return (
+export default function LabManager() {
+  return (    
+    <>        
+      <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+    />
     <main className="grid min-h-screen">
-      
+            
       <Header>
         <div className='flex flex-row items-center justify-between mr-2'> {/*Div user e button*/}
 
@@ -19,8 +34,7 @@ export default function Home() {
           <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 ">Logout</button>
         </div>
       </Header>
-        
-
+      
       {/*body Cards*/}
       <div className=' block  min-w=[300px] min-h-[200px] items-center justify-center'>
 
@@ -49,5 +63,6 @@ export default function Home() {
       </div>
 
     </main>
+    </>
   )
 }

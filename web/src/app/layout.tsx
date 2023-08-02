@@ -1,5 +1,6 @@
 import './globals.css'
 import { ReactNode } from 'react'
+import { ToastContainer } from 'react-toastify';
 
 import {
   Roboto_Flex as Roboto,
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={`${roboto.variable} ${baiJamjuree.variable} bg-white-200 font-sans text-black-100`}
       >
+        
         {children}
       </body>
     </html>

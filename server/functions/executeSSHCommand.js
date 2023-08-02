@@ -1,12 +1,16 @@
 import { exec } from 'child_process';
+import { promisify } from 'util';
 
-export function executeShellScript(scriptContent) {
-  exec(scriptContent, (error, stdout, stderr) => {
-    if (error) {
-      console.error('Erro ao executar o script:', error);
-      return;
-    }
+const execAsync = promisify(exec);
+
+export async function executeShellScript(scriptContent) {
+  try {
+    const { stdout, stderr } = await execAsync(scriptContent);
     console.log('Saída:', stdout);
     console.error('Erros:', stderr);
-  });
+    return stdout;
+  } catch (error) {
+    console.error('Erro ao executar o script:', error);
+    throw error;
+  }
 }
