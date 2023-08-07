@@ -1,6 +1,7 @@
 import express from 'express';
 import fs from 'fs'; // Módulo para manipulação de arquivos
 import cors from 'cors';
+import ldap from 'ldapjs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -78,3 +79,33 @@ app.post('/api/gerenciaLab', async (req, res) => {
     res.status(500).json({ error: 'Erro ao executar comando.' });
   }
 });
+
+// Sistema de login usando LDAP
+app.post('/authenticate', (req, res) => {
+  // Extração do nome de usuário e senha do corpo da solicitação
+  const { user, password } = req.body;
+
+  // Criando um cliente LDAP para se conectar ao servidor
+  const client = ldap.createClient({
+    url: 'ldaps://10.10.0.6:636', // URL do servidor LDAP
+  });
+
+  // Montando o Distinguished Name (DN) para autenticação
+  const bindDN = `uid=${user},ou=servidores,ou=colaboradores,dc=utfpr,dc=edu,dc=br`;
+
+  // Tentativa de autenticação no servidor LDAP
+  client.bind(bindDN, password, (err) => {
+    if (err) {
+      // Tratamento de erro: falha na autenticação
+      console.error('LDAP Bind Error:', err);
+      res.status(401).json({ message: 'Authentication failed' }); // Resposta de falha
+    } else {
+      // Autenticação bem-sucedida
+      console.log('LDAP Bind Successful');
+      res.status(200).json({ message: 'Authentication successful' }); // Resposta de sucesso
+    }
+    // Desconectando o cliente LDAP após a tentativa de autenticação
+    client.unbind();
+  });
+});
+
