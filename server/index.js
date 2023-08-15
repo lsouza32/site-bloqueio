@@ -1,12 +1,15 @@
 import express from 'express';
 import fs from 'fs'; // Módulo para manipulação de arquivos
 import cors from 'cors';
+import { Pool } from 'ldap-pool';
 import ldap from 'ldapjs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 import { executeShellScript } from './functions/executeSSHCommand.js'
 import { removeFiles } from './functions/removeFiles.js';
+import { hasPermission } from './functions/hasPermission.js';
+
 
 const app = express();
 const port = 3001;
@@ -25,6 +28,7 @@ app.listen(port, () => {
   console.log(` 🚀 Servidor rodando em http://localhost:${port} 🚀`);
 });
 
+// ------------ Sistema de gerenciamento do lab
 app.post('/api/gerenciaLab', async (req, res) => {
   try {
     const { vlan, action } = req.body; // As informações enviadas pelo frontend
@@ -80,32 +84,72 @@ app.post('/api/gerenciaLab', async (req, res) => {
   }
 });
 
-// Sistema de login usando LDAP
-app.post('/authenticate', (req, res) => {
-  // Extração do nome de usuário e senha do corpo da solicitação
+
+
+// -------------- Sistema de login usando LDAP
+app.post('/authenticate', async (req, res) => {
   const { user, password } = req.body;
+  let client;
 
-  // Criando um cliente LDAP para se conectar ao servidor
-  const client = ldap.createClient({
-    url: 'ldaps://10.10.0.6:636', // URL do servidor LDAP
-  });
+  try {
+    // Verifica se o usuário tem permissão
+    if (await hasPermission('./users/users.txt', user)) {
+      // Cria um cliente LDAP para se conectar ao servidor
+      client = ldap.createClient({
+        url: 'ldaps://localhost:636',
+        tlsOptions: {
+          rejectUnauthorized: false,
+        },
+      });
 
-  // Montando o Distinguished Name (DN) para autenticação
-  const bindDN = `uid=${user},ou=servidores,ou=colaboradores,dc=utfpr,dc=edu,dc=br`;
+      const bindDN = `uid=${user},ou=servidores,ou=colaboradores,dc=utfpr,dc=edu,dc=br`;
 
-  // Tentativa de autenticação no servidor LDAP
-  client.bind(bindDN, password, (err) => {
-    if (err) {
-      // Tratamento de erro: falha na autenticação
-      console.error('LDAP Bind Error:', err);
-      res.status(401).json({ message: 'Authentication failed' }); // Resposta de falha
+      // Trata eventos de erro do cliente LDAP
+      client.on('error', (ldapError) => {
+        console.error('LDAP Client Error:', ldapError);
+
+        // Mapeia códigos de erro a mensagens de erro específicas
+        const errorMessages = {
+          UNABLE_TO_GET_ISSUER_CERT_LOCALLY: 'Certificado do servidor LDAP não confiável',
+          DEPTH_ZERO_SELF_SIGNED_CERT: 'Certificado autoassinado do servidor LDAP',
+          ERR_TLS_CERT_ALTNAME_INVALID: 'Nome alternativo inválido no certificado do servidor LDAP',
+        };
+
+        // Seleciona a mensagem de erro com base no código de erro
+        const errorMessage = errorMessages[ldapError.code] || 'Erro na conexão com o servidor LDAP';
+
+        // Retorna a mensagem de erro ao cliente
+        return res.status(401).json({ message: errorMessage });
+      });
+
+      // Tenta autenticar o usuário no LDAP
+      await new Promise((resolve, reject) => {
+        client.bind(bindDN, password, err => {
+          client.unbind();
+          
+          if (err) {
+            // Retornar a Promise com uma rejeição em caso de erro
+            return res.status(402).json({ message: 'Senha ou usuário inválido'});
+          }
+          // Resolva a Promise em caso de autenticação bem-sucedida
+          resolve();
+          return res.status(200).json({ message: 'Authentication successful' });
+        });
+      });
+
+      
     } else {
-      // Autenticação bem-sucedida
-      console.log('LDAP Bind Successful');
-      res.status(200).json({ message: 'Authentication successful' }); // Resposta de sucesso
+      // Retorna mensagem de erro ao cliente se o usuário não tiver permissão
+      return res.status(403).json({ message: 'Usuário sem permissão. Entre em contato com a COGETI'});
     }
-    // Desconectando o cliente LDAP após a tentativa de autenticação
-    client.unbind();
-  });
+  } catch (err) {
+    console.error('Error:', err);
+    // Retorna mensagem de erro interno ao cliente
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  } finally {
+    // Certifica-se de desconectar o cliente mesmo em caso de erro
+    if (client) {
+      client.unbind();
+    }
+  }
 });
-

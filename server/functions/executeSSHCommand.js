@@ -3,6 +3,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+// funcao para executar shellScript
 export async function executeShellScript(scriptContent) {
   try {
     const { stdout, stderr } = await execAsync(scriptContent);

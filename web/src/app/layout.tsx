@@ -1,6 +1,5 @@
 import './globals.css'
 import { ReactNode } from 'react'
-import { ToastContainer } from 'react-toastify';
 
 import {
   Roboto_Flex as Roboto,

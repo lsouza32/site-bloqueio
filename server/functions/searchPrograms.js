@@ -1,5 +1,6 @@
 import fs from 'fs'; // Módulo para manipulação de arquivos
 
+// funcao teste para organizer os programas por sala (projeto Sergio)
 export function obterProgramasPorSala(arquivo, salaBuscada) {
   try {
     const conteudo = fs.readFileSync(arquivo, 'utf-8');

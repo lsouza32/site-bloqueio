@@ -1,24 +1,33 @@
+"use client"
 import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
 import { UserCircleIcon } from '@heroicons/react/24/solid'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
+
 
 export default function LabManager() {
+  const router = useRouter();
+
+  function handleSingOut(){
+    router.push('/login');
+  }
+
   return (    
     <>        
       <ToastContainer
-      position="top-right"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="colored"
-    />
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     <main className="grid min-h-screen">
             
       <Header>
@@ -31,7 +40,8 @@ export default function LabManager() {
           </div>
 
           {/* Botão de logout no canto superior direito */}
-          <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 ">Logout</button>
+          <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 "
+          onClick={handleSingOut}>Logout</button>
         </div>
       </Header>
       

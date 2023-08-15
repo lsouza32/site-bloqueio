@@ -1,5 +1,6 @@
 import fs from 'fs'; // Módulo para manipulação de arquivos
 
+// funcao para deletar arquivos
 export function removeFiles(directoryPath, fileName){
   
     fs.rm(`${directoryPath}/${fileName}`, (err)=>{ // remove o arquivo
