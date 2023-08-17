@@ -1,3 +1,4 @@
+"use client"
 import './globals.css'
 import { ReactNode } from 'react'
 
@@ -22,13 +23,13 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-br">
-      <body
-        className={`${roboto.variable} ${baiJamjuree.variable} bg-white-200 font-sans text-black-100`}
-      >
-        
-        {children}
-      </body>
-    </html>
+      <html lang="pt-br">
+        <body
+          className={`${roboto.variable} ${baiJamjuree.variable} bg-white-200 font-sans text-black-100`}
+        >
+          
+          {children}
+        </body>
+      </html>
   )
 }

@@ -1,17 +1,55 @@
 "use client"
-import { Card } from '@/components/Card'
-import { Header } from '@/components/Header'
+import { useRouter } from 'next/navigation';
+import nookies, { destroyCookie } from 'nookies';
+import { useState, useEffect } from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/solid'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { useRouter } from 'next/navigation';
+
+import { Card } from '@/components/Card'
+import { Header } from '@/components/Header'
 
 
-export default function LabManager() {
+const LabManager = ()=> {
   const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   function handleSingOut(){
+    // Remova o cookie do token
+    destroyCookie(null, 'nextauth.token');
     router.push('/login');
+  }
+
+
+  useEffect(() => {
+    const cookies = nookies.get();
+    const token = cookies['nextauth.token'];
+
+    if (!token) {
+      router.push('/login'); // Redirecionar para a página de login se o token não estiver presente
+      console.log('token nao esta presente: '+ token)
+    } else {
+      // Verificar a autenticidade do token no backend
+      fetch('http://localhost:3001/verify-token', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Token inválido');
+          }
+          setIsAuthorized(true); // Autorizar o acesso se o token for válido
+        })
+        .catch(() => {
+          router.push('/login'); // Redirecionar para a página de login se ocorrer algum erro
+        });
+    }
+  }, []);
+
+  if (!isAuthorized) {
+    return null; // Pode exibir uma mensagem de carregamento aqui
   }
 
   return (    
@@ -75,4 +113,7 @@ export default function LabManager() {
     </main>
     </>
   )
-}
+};
+
+
+export default LabManager;

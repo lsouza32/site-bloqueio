@@ -21,7 +21,7 @@ export function Card({ sala, vlan }: CardProps) {
       <Button title="Reiniciar Computadores" sala={sala} vlan={vlan}/>
       <Button title="Iniciar em Windows" sala={sala} vlan={vlan}/>
       <Button title="Iniciar em Linux" sala={sala} vlan={vlan}/>
-      <Button title="Limpar Prova" sala={sala} vlan={vlan}/>
+      <Button title="Apagar Usuário Prova" sala={sala} vlan={vlan}/>
       {/*<Button title="Programas Disponíveis" sala={sala} vlan={vlan}/>*/}
 
 

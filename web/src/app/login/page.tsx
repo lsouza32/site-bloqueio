@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { setCookie } from 'nookies';
 
 import { Header } from "@/components/Header";
 
@@ -23,17 +24,23 @@ export default function Login() {
 
   const router = useRouter();
 
-  async function handleSignIn(data: SignInData) {
+
+  async function signIn({ user, password }: SignInData) {
     try {
       const response = await fetch('http://localhost:3001/authenticate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ user, password }),
       });
 
       if (response.ok) {
+        const data = await response.json();
+        setCookie(undefined, 'nextauth.token', data.token , {
+          maxAge: 60 * 60 * 1, // expira em 1hr
+          path: '/'
+        })
         // Autenticação bem-sucedida, redirecione para a próxima página
         router.push('/labManager');
       }
@@ -42,14 +49,13 @@ export default function Login() {
       }
       else if(response.status=== 403){
         toast.error('Usuário sem permissão. Entre em contato com a COGETI');
-        router.push('/labManager');
       }
     } catch (error) {
       toast.error('Authentication failed');
       console.error('Error:', error);
     }
   }
-
+  
   const handleShowPassword = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -62,7 +68,7 @@ export default function Login() {
       <div className="flex items-center justify-center p-40">
         <form
           className="w-full max-w-md bg-white-100 rounded-lg px-8 pt-6 pb-8 shadow-lg "
-          onSubmit={handleSubmit(handleSignIn)}
+          onSubmit={handleSubmit(signIn)}
         >
           <div className="mb-4">
             <label

@@ -53,11 +53,9 @@ export function Button({ title, sala, vlan }: ButtonProps) {
         body: JSON.stringify(dataToSend),        
         
       });
-      console.log(JSON.stringify(dataToSend));
 
       // Verificar se a requisição foi bem-sucedida
       if (response.ok) {
-        console.log('Dados enviados com sucesso!');
         notificationSuccess();
       } else {
         notificationError();
