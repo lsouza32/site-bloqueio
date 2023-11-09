@@ -1,10 +1,13 @@
 import express from 'express';
 import fs from 'fs'; // Módulo para manipulação de arquivos
 import cors from 'cors';
+import http from 'node:http';
+import { Server } from 'socket.io';
 import ldap from 'ldapjs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 import { executeShellScript } from './functions/executeSSHCommand.js'
 import { removeFiles } from './functions/removeFiles.js';
@@ -13,6 +16,15 @@ import { hasPermission } from './functions/hasPermission.js';
 
 const app = express();
 const port = 3001;
+const prisma = new PrismaClient();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
+
 
 // Middleware para interpretar o corpo da requisição como JSON
 app.use(express.json());
@@ -24,9 +36,12 @@ const __dirname = dirname(__filename);
 const comandosFolderPath = join(__dirname, 'comandos');
 app.use('/comandos', express.static(comandosFolderPath));
 
-app.listen(port, () => {
+
+server.listen(port, () => {
   console.log(` 🚀 Servidor rodando em http://localhost:${port} 🚀`);
 });
+
+
 
 // ------------ Sistema de gerenciamento do lab
 app.post('/api/gerenciaLab', async (req, res) => {
@@ -34,28 +49,30 @@ app.post('/api/gerenciaLab', async (req, res) => {
     const { vlan, action } = req.body; // As informações enviadas pelo frontend
     const ip = `10.10.${vlan}.`;
 
+    console.log('------- 2 estou recebendo action: ' + action);
+
     if (action === 'Bloquear a rede') {
       const fileContent = ''; // Conteudo do arquivo
       fs.writeFileSync(`comandos/${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
     }
 
-    if (action === 'Desbloquear rede') {
+    else if (action === 'Desbloquear rede') {
       removeFiles('comandos', `${vlan}.html`)
     }
 
-    if (action === 'Limpar Prova') {
+    else if (action === 'Limpar Prova') {
       const fileContent = ''; // Conteudo do arquivo
       fs.writeFileSync(`comandos/limpa-${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
     }
 
-    if (action === 'Iniciar em Linux') {
+    else if (action === 'Iniciar em Linux') {
       const fileContent = ''; // inicia o arquivo em branco
       fs.writeFileSync(`comandos/linux-${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
       let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`;
       await executeShellScript(scriptContent);
     }
 
-    if (action === 'Desligar Computadores') {
+    else if (action === 'Desligar Computadores') {
       for (let i = 2; i <= 250; i++) {
         // script a ser rodado
         let scriptContent = `sudo ssh root@" ${ip}${i} ." -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -C 'shutdown -h now & shutdown /t 1 /s /f' >/dev/null &`;
@@ -63,7 +80,7 @@ app.post('/api/gerenciaLab', async (req, res) => {
       }
     }
 
-    if (action === 'Reiniciar Computadores') {
+    else if (action === 'Reiniciar Computadores') {
       for (let i = 2; i <= 250; i++) {
         // script a ser rodado
         let scriptContent = `sudo ssh root@" ${ip}${i} ." -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -C 'shutdown -r now & shutdown /t 1 /r /f ' >/dev/null &`;
@@ -71,7 +88,7 @@ app.post('/api/gerenciaLab', async (req, res) => {
       }
     }
 
-    if (action === 'Iniciar em Windows') {
+    else if (action === 'Iniciar em Windows') {
       removeFiles('comandos', `linux-${vlan}.html`) // Funcao verifica se existe comandos para iniciar em linux, se tiver, ele exclui o arquivo .html
       let scriptContent = `sudo ssh root@10.10.0.11 -o StrictHostKeyChecking=no -C /root/scripts/acordar.sh " ${vlan} ." >/dev/null &`; //script a ser rodado
       await executeShellScript(scriptContent);
@@ -184,3 +201,22 @@ app.get('/verify-token', (req, res) => {
   }
 });
 
+app.post('/api/atualizarBloqueio', async (req, res) => {
+  try {
+    const { vlan, isBlocked } = req.body;
+
+    // Atualizar o estado de bloqueio no banco de dados usando o PrismaClient
+    await prisma.sala.update({
+      where: { vlan: vlan }, // Use a propriedade vlan como identificador
+      data: { isBlocked },
+    });
+
+    // Emitir um evento para notificar o frontend sobre a atualização
+    io.emit('isBlockedUpdated', { sala: vlan, isBlocked });
+
+    res.status(200).json({ message: 'Estado de bloqueio atualizado com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao atualizar o estado de bloqueio:', error);
+    res.status(500).json({ error: 'Erro ao atualizar o estado de bloqueio.' });
+  }
+});

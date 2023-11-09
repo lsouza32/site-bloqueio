@@ -5,12 +5,14 @@ import { useState, useEffect } from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/solid'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { Provider } from 'react-redux';
 
 import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
 
 
-const LabManager = ()=> {
+
+export default function LabManager () {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
@@ -56,14 +58,13 @@ const LabManager = ()=> {
     <>        
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover
         theme="colored"
       />
     <main className="grid min-h-screen">
@@ -74,7 +75,7 @@ const LabManager = ()=> {
           {/* Ícone de usuário e texto "Bem-vindo ..." */}             
           <div className=" flex flex-col items-center px-20">        
             <UserCircleIcon className="h-10 w-10 text-black-50" />
-            <span className="mt-2 font-alt">Bem-vindo...</span>
+            <span className="mt-2 font-alt">Bem-vindo</span>
           </div>
 
           {/* Botão de logout no canto superior direito */}
@@ -115,5 +116,3 @@ const LabManager = ()=> {
   )
 };
 
-
-export default LabManager;
