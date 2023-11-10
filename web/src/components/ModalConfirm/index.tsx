@@ -3,14 +3,12 @@ import React, { useState } from "react";
 
 interface ModalConfirmProps {
   setShowModalConfirm: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsBlocked: React.Dispatch<React.SetStateAction<boolean>>;
-  setActionButton: React.Dispatch<React.SetStateAction<string>>;
   handleSubmit: ()=> void;
   titleAction: string;
   sala: string;
 }
 
-export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSubmit, setIsBlocked, setActionButton }: ModalConfirmProps) {
+export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSubmit }: ModalConfirmProps) {
   
   return(
     
@@ -51,14 +49,6 @@ export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSub
                   onClick={() => {
                     setShowModalConfirm(false)
                     handleSubmit()
-                    if(titleAction=== 'Bloquear a rede'){
-                      setIsBlocked (true)
-                      setActionButton('Desbloquear rede')
-                    }
-                    if(titleAction=== 'Desbloquear rede'){
-                      setIsBlocked(false)
-                      setActionButton('Bloquear a rede')
-                    }                    
                   }}
                 >
                   Confirmar

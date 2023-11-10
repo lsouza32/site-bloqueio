@@ -2,12 +2,11 @@ import express from 'express';
 import fs from 'fs'; // Módulo para manipulação de arquivos
 import cors from 'cors';
 import http from 'node:http';
-import { Server } from 'socket.io';
 import ldap from 'ldapjs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { Server as SocketIo } from 'socket.io';
 
 import { executeShellScript } from './functions/executeSSHCommand.js'
 import { removeFiles } from './functions/removeFiles.js';
@@ -16,25 +15,33 @@ import { hasPermission } from './functions/hasPermission.js';
 
 const app = express();
 const port = 3001;
-const prisma = new PrismaClient();
 const server = http.createServer(app);
-const io = new Server(server, {
+
+const io = new SocketIo(server, {
   cors: {
-    origin: '*',
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
   },
 });
 
+const corsOptions = {
+  origin: 'http://localhost:3000', // Substitua pelo endereço do seu frontend
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Habilita o uso de credenciais (cookies, tokens) durante a solicitação
+};
+
 
 // Middleware para interpretar o corpo da requisição como JSON
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cors());
 
 // Configurar rota para servir arquivos estáticos na sub-rota /comandos
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const comandosFolderPath = join(__dirname, 'comandos');
 app.use('/comandos', express.static(comandosFolderPath));
+
+
 
 
 server.listen(port, () => {
@@ -51,7 +58,7 @@ app.post('/api/gerenciaLab', async (req, res) => {
 
     console.log('------- 2 estou recebendo action: ' + action);
 
-    if (action === 'Bloquear a rede') {
+    if (action === 'Bloquear rede') {
       const fileContent = ''; // Conteudo do arquivo
       fs.writeFileSync(`comandos/${vlan}.html`, fileContent); // Criar arquivo com o conteudo 'fileContent'.
     }
@@ -99,6 +106,33 @@ app.post('/api/gerenciaLab', async (req, res) => {
     console.error('Erro ao executar comando:', error);
     res.status(500).json({ error: 'Erro ao executar comando.' });
   }
+});
+
+
+//------------ Verifica se existe o arquivo para bloquear a rede
+app.get('/api/searchFile/:fileName', (req, res) => {
+  const { fileName } = req.params;
+
+  // Chama a função searchFile com o nome do arquivo fornecido na URL
+  const fileExists = searchFile(fileName);
+
+  // Retorna o resultado como JSON
+  res.json({ fileExists });
+});
+
+io.on('connection', (socket) => {
+  console.log('Cliente conectado');
+
+  // Ouça as mensagens do cliente e emita para todos os clientes
+  socket.on('updateState', (data) => {
+    console.log('Novo estado recebido:', data);
+    io.emit('stateUpdated', data); // Emita para todos os clientes
+  });
+
+  // Cleanup da conexão do WebSocket
+  socket.on('disconnect', () => {
+    console.log('Cliente desconectado');
+  });
 });
 
 
@@ -153,7 +187,7 @@ app.post('/authenticate', async (req, res) => {
                 
           const secretKey = 'c3e5c8f7a0b2e4d6a1b4f8c5e9d2a7b1'; // Troque por uma chave secreta mais segura
           const options = {
-            expiresIn: '1h', // Tempo de expiração do token
+            expiresIn: 21600, // Tempo de expiração do token em segundo (atual:6h)
           };
           const token = jwt.sign({user}, secretKey, options);
           
@@ -201,22 +235,4 @@ app.get('/verify-token', (req, res) => {
   }
 });
 
-app.post('/api/atualizarBloqueio', async (req, res) => {
-  try {
-    const { vlan, isBlocked } = req.body;
 
-    // Atualizar o estado de bloqueio no banco de dados usando o PrismaClient
-    await prisma.sala.update({
-      where: { vlan: vlan }, // Use a propriedade vlan como identificador
-      data: { isBlocked },
-    });
-
-    // Emitir um evento para notificar o frontend sobre a atualização
-    io.emit('isBlockedUpdated', { sala: vlan, isBlocked });
-
-    res.status(200).json({ message: 'Estado de bloqueio atualizado com sucesso!' });
-  } catch (error) {
-    console.error('Erro ao atualizar o estado de bloqueio:', error);
-    res.status(500).json({ error: 'Erro ao atualizar o estado de bloqueio.' });
-  }
-});

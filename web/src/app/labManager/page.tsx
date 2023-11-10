@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { UserCircleIcon } from '@heroicons/react/24/solid'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { Provider } from 'react-redux';
 
 import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
@@ -16,7 +15,7 @@ export default function LabManager () {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-  function handleSingOut(){
+  function handleSignOut(){
     // Remova o cookie do token
     destroyCookie(null, 'nextauth.token');
     router.push('/login');
@@ -80,7 +79,7 @@ export default function LabManager () {
 
           {/* Botão de logout no canto superior direito */}
           <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 "
-          onClick={handleSingOut}>Logout</button>
+          onClick={handleSignOut}>Logout</button>
         </div>
       </Header>
       
