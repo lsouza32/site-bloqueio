@@ -10,7 +10,6 @@ import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
 
 
-
 export default function LabManager () {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -31,7 +30,7 @@ export default function LabManager () {
       console.log('token nao esta presente: '+ token)
     } else {
       // Verificar a autenticidade do token no backend
-      fetch('http://localhost:3001/verify-token', {
+      fetch('http://localhost:3001/api/authentication/verify-token', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -114,4 +113,3 @@ export default function LabManager () {
     </>
   )
 };
-

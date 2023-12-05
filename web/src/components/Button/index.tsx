@@ -36,7 +36,7 @@ export function Button({ title, sala, vlan }: ButtonProps) {
       };
 
       // Enviar a requisição POST para o backend
-      const response = await fetch(`http://localhost:3001/api/gerenciaLab`, {
+      const response = await fetch(`http://localhost:3001/api/actions/${actionButton.replace(/\s/g, '-').toLowerCase()}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

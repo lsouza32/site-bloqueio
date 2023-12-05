@@ -1,6 +1,4 @@
 "use client"
-
-
 import React, { useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -27,7 +25,7 @@ export default function Login() {
 
   async function signIn({ user, password }: SignInData) {
     try {
-      const response = await fetch('http://localhost:3001/authenticate', {
+      const response = await fetch('http://localhost:3001/api/authentication/authenticate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
