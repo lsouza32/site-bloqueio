@@ -1,0 +1,6 @@
+-- CreateTable
+CREATE TABLE "Salas" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "vlan" INTEGER NOT NULL,
+    "isBlocked" BOOLEAN NOT NULL
+);

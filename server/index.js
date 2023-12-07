@@ -1,3 +1,4 @@
+// index server
 import express from 'express';
 import cors from 'cors';
 import http from 'node:http';
@@ -6,6 +7,7 @@ import { dirname, join } from 'path';
 
 import routerActions from './routes/routerActions.js';
 import routerAuthentication from './routes/routerAuthentication.js';
+import routerDB from './routes/routerDB.js'
 
 const app = express();
 const port = 3001;
@@ -32,6 +34,7 @@ app.use('/comandos', express.static(comandosFolderPath));
 //utilizando as rotas da pasta routes
 app.use('/api/actions', routerActions);
 app.use('/api/authentication', routerAuthentication);
+app.use('/api/db', routerDB);
 
 
 server.listen(port, () => {

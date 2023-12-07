@@ -8,11 +8,20 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
+import { SalaType, agruparSalasPorBloco } from '@/utils/functions'
+import { fetchSalas } from '@/utils/api';
+
+
+
 
 
 export default function LabManager () {
+
   const router = useRouter();
+  const [salas, setSalas] = useState<SalaType[]>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
+
+  const salasAgrupadas = agruparSalasPorBloco(salas);
 
   function handleSignOut(){
     // Remova o cookie do token
@@ -27,7 +36,6 @@ export default function LabManager () {
 
     if (!token) {
       router.push('/login'); // Redirecionar para a página de login se o token não estiver presente
-      console.log('token nao esta presente: '+ token)
     } else {
       // Verificar a autenticidade do token no backend
       fetch('http://localhost:3001/api/authentication/verify-token', {
@@ -47,6 +55,12 @@ export default function LabManager () {
         });
     }
   }, []);
+
+    // useEffect para buscar as salas 
+    useEffect(() => {
+      fetchSalas(setSalas);
+    }, []); // Executar uma vez no carregamento do componente
+
 
   if (!isAuthorized) {
     return null; // Pode exibir uma mensagem de carregamento aqui
@@ -85,27 +99,15 @@ export default function LabManager () {
       {/*body Cards*/}
       <div className=' block  min-w=[300px] min-h-[200px] items-center justify-center'>
 
-      <div className='flex flex-wrap items-center justify-center'>
-          {/*Bloco N */}        
-          <Card sala='N007' vlan={4}/>
-          <Card sala='N101' vlan={34}/>
-          <Card sala='N103' vlan={33}/>
-          <Card sala='N105' vlan={32}/>
+        
 
-        </div>    
-
-        <div className='flex flex-wrap items-center justify-center'>
-          {/*Bloco M */}        
-          <Card sala='M006' vlan={9}/>
-          <Card sala='M009' vlan={10}/>
-          <Card sala='M010' vlan={5}/>
-          <Card sala='M012' vlan={59}/>
-        </div>  
-
-        <div className='flex flex-wrap items-center justify-center'>
-          {/*Bloco C */}        
-          <Card sala='C003' vlan={3}/>
-        </div>       
+      {Object.entries(salasAgrupadas).map(([bloco, salasDoBloco]) => (
+        <div key={bloco} className='flex flex-wrap items-center justify-center'>
+          {salasDoBloco.map((sala) => (
+            <Card key={sala.lab} sala={sala.lab} vlan={sala.vlan} />
+          ))}
+        </div>
+      ))}
 
       </div>
 

@@ -1,8 +1,10 @@
 // ButtonBlocked.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+
 import { ModalConfirm } from '../ModalConfirm';
+import { readVlan, updateVlan} from '../../utils/BDEndpoints'
 
 interface ButtonBlockedProps {
   title: string;
@@ -10,26 +12,33 @@ interface ButtonBlockedProps {
   vlan: number;
 }
 
-
-
 export function ButtonBlocked({ title, sala, vlan }: ButtonBlockedProps) {
-  const [actionButton, setActionButton] = useState(() => {
-    const storedAction = localStorage.getItem('actionButton');
-    return storedAction || 'Bloquear rede';
-  });
 
-  const [isBlocked, setIsBlocked] = useState(() => {
-    const storedState = localStorage.getItem('isBlocked');
-    return storedState ? JSON.parse(storedState) : false;
-  });
+  const [actionButton, setActionButton] = useState(title);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    readVlan(vlan)
+      .then((data) => setIsBlocked(data.isBlocked))
+      .catch((error) => console.error('Falha ao ler a VLAN:', error));
+  }, [vlan]);
+
   const [showModalConfirm, setShowModalConfirm] = useState(false);
 
-  const toggleBlocked = () => {
-    setIsBlocked((prevIsBlocked: boolean) => !prevIsBlocked);
-    setActionButton((prevActionButton) =>
-      !prevActionButton.includes('Desbloquear') ? 'Desbloquear rede' : 'Bloquear rede'
-    );
+  const toggleBlocked = async () => {
+    const newIsBlocked = !isBlocked;
+    try {
+      // Atualizar o estado isBlocked no banco de dados
+      await updateVlan(vlan, newIsBlocked);
+      setIsBlocked(newIsBlocked);
+      setActionButton((prevActionButton) =>
+        !prevActionButton.includes('Desbloquear') ? 'Desbloquear rede' : 'Bloquear rede'
+      );
+    } catch (error) {
+      console.error('Falha ao atualizar a VLAN:', error);
+    }
   };
+  
   
   const notificationSuccess = async () => {
     toast.success('Requisição enviada com sucesso!');
