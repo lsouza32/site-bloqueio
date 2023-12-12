@@ -6,7 +6,6 @@
 ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/lsouza32/site-bloqueio?style=for-the-badge)
 ![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/lsouza32/site-bloqueio?style=for-the-badge)
 
-<img src="imagem.png" alt="Exemplo imagem">
 
 > Serviço para gerenciamento de laboratórios
 
