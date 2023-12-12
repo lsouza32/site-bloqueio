@@ -56,7 +56,7 @@ Os arquivos users.txt e usersAdmin.txt devem sempre estar presentes.
 - ../index -> Arquivo de criação do servidor. Contém IP e porta do servidor.
 
 ### Utils (/web/utils)
-- /api.ts -> Contém as chamadas para o server
+- /api.ts -> Contém as chamadas para o server. Contém URL do server
 - /BDEndpoints -> Contém as chamadas para o banco de dados.
 - /functions -> Contém algumas funções básicas, usado para melhor organização.
 
