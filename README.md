@@ -20,7 +20,7 @@ $ git clone https://github.com/lsouza32/site-bloqueio
 
 ### Entre no diretório do projeto:
 ```bash
-$ cd WAITERAPP
+$ cd site-bloqueio
 ```
 
 ## Em cada diretório do projeto instale as dependências e inicie as aplicações:
