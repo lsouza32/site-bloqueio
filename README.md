@@ -15,7 +15,7 @@ Para instalar o gerenciador, siga estas etapas:
 
 ### Clone esse repositório:
 ```bash
-$ git clone https://github.com/lsouza32/WAITERAPP
+$ git clone https://github.com/lsouza32/site-bloqueio
 ```
 
 ### Entre no diretório do projeto:
