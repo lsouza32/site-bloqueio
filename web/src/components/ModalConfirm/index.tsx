@@ -4,16 +4,14 @@ import React from "react";
 interface ModalConfirmProps {
   setShowModalConfirm: React.Dispatch<React.SetStateAction<boolean>>;
   handleSubmit: ()=> void;
-  titleAction: string;
+  titleAction: string | undefined;
   sala: string;
 }
 
 export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSubmit }: ModalConfirmProps) {
   
   return(
-    
       <>
-
       {/*div principal (tela inteira)*/}
         <div          
           className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none backdrop-blur-sm"
@@ -36,13 +34,13 @@ export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSub
               </div>
               {/*footer*/}
               <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+
                 <button
                   className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
                   onClick={() => setShowModalConfirm(false)}
-                >
-                  Cancelar
-                </button>
+                >Cancelar</button>
+
                 <button
                   className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
@@ -50,9 +48,8 @@ export function ModalConfirm({ setShowModalConfirm, titleAction, sala, handleSub
                     setShowModalConfirm(false)
                     handleSubmit()
                   }}
-                >
-                  Confirmar
-                </button>
+                >Confirmar</button>
+
               </div>
             </div>
           </div>

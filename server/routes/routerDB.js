@@ -7,12 +7,13 @@ const prisma = new PrismaClient();
 
 // Endpoint de criação (create)
 routerDB.post('/create', async (req, res) => {
-  const { vlan, isBlocked } = req.body;
+  const { lab, vlan } = req.body;
   try {
     const result = await prisma.salas.create({
       data: {
+        lab,
         vlan,
-        isBlocked,
+        isBlocked: false,
       },
     });
     res.json(result);
@@ -56,6 +57,21 @@ routerDB.put('/update/:vlan', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao atualizar o registro.' });
+  }
+});
+
+routerDB.delete('/delete/:vlan', async (req, res) => {
+  const vlan = parseInt(req.params.vlan);
+  try {
+    const result = await prisma.salas.delete({
+      where: {
+        vlan,
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir o registro.' });
   }
 });
 

@@ -36,7 +36,6 @@ app.use('/api/actions', routerActions);
 app.use('/api/authentication', routerAuthentication);
 app.use('/api/db', routerDB);
 
-
 server.listen(port, () => {
   console.log(` 🚀 Servidor rodando em http://localhost:${port} 🚀`);
 });

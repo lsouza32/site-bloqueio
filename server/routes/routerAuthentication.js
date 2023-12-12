@@ -10,10 +10,16 @@ const routerAuthentication = express.Router();
 routerAuthentication.post('/authenticate', async (req, res) => {
   const { user, password } = req.body;
   let client;
+  let userAdmin;
 
   try {
     // Verifica se o usuário tem permissão
     if (await hasPermission('./users/users.txt', user)) {
+      // verificar admin
+      if(await hasPermission('./users/usersAdmin.txt', user)){
+        userAdmin = true
+      }else{ userAdmin = false}
+
       // Cria um cliente LDAP para se conectar ao servidor
       client = ldap.createClient({
         url: 'ldaps://10.10.0.6:636',
@@ -58,7 +64,11 @@ routerAuthentication.post('/authenticate', async (req, res) => {
           const options = {
             expiresIn: 21600, // Tempo de expiração do token em segundo (atual:6h)
           };
-          const token = jwt.sign({user}, secretKey, options);
+          const payload = {
+            user: user,
+            userAdmin: userAdmin,
+          };
+          const token = jwt.sign(payload, secretKey, options);
           
           // Resolva a Promise em caso de autenticação bem-sucedida
           resolve();
@@ -94,9 +104,12 @@ routerAuthentication.get('/verify-token', (req, res) => {
   // Aqui você pode realizar a validação do token, por exemplo, usando a biblioteca jsonwebtoken
   try {
     const secretKey = 'c3e5c8f7a0b2e4d6a1b4f8c5e9d2a7b1'; // A mesma chave usada para assinar o token
-    jwt.verify(token, secretKey);
+    const decodedToken = jwt.verify(token, secretKey);
 
-    return res.status(200).json({ message: 'Token válido' });
+    // A partir daqui, você pode acessar as informações adicionais do payload
+    const user = decodedToken.user;
+    const userAdmin = decodedToken.userAdmin;
+    return res.status(200).json({ message: 'Token válido', userAdmin });
   } catch (error) {
     return res.status(401).json({ message: 'Token inválido' });
   }

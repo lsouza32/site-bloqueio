@@ -1,21 +1,27 @@
 // ButtonBlocked.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { ModalConfirm } from '../ModalConfirm';
 import { readVlan, updateVlan} from '../../utils/BDEndpoints'
+import { notificationError, notificationSuccess } from '@/utils/functions';
 
 interface ButtonBlockedProps {
   title: string;
   sala: string;
   vlan: number;
+  salaBlocked: boolean;
 }
 
-export function ButtonBlocked({ title, sala, vlan }: ButtonBlockedProps) {
+export function ButtonBlocked({ title, sala, vlan, salaBlocked }: ButtonBlockedProps) {
 
   const [actionButton, setActionButton] = useState(title);
   const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(()=>{
+    setIsBlocked(salaBlocked)
+  }, [salaBlocked])
 
   useEffect(() => {
     readVlan(vlan)
@@ -23,32 +29,29 @@ export function ButtonBlocked({ title, sala, vlan }: ButtonBlockedProps) {
       .catch((error) => console.error('Falha ao ler a VLAN:', error));
   }, [vlan]);
 
+  useEffect(()=>{
+    if(isBlocked){
+      setActionButton('Desbloquear rede')
+    }else{
+      setActionButton('Bloquear rede')
+    }
+  }, [isBlocked])
+
   const [showModalConfirm, setShowModalConfirm] = useState(false);
 
-  const toggleBlocked = async () => {
+  const toggleBlocked = useCallback(async () => {
     const newIsBlocked = !isBlocked;
     try {
       // Atualizar o estado isBlocked no banco de dados
       await updateVlan(vlan, newIsBlocked);
       setIsBlocked(newIsBlocked);
-      setActionButton((prevActionButton) =>
-        !prevActionButton.includes('Desbloquear') ? 'Desbloquear rede' : 'Bloquear rede'
-      );
     } catch (error) {
       console.error('Falha ao atualizar a VLAN:', error);
     }
-  };
+   }, [isBlocked, vlan]);
+   
   
-  
-  const notificationSuccess = async () => {
-    toast.success('Requisição enviada com sucesso!');
-  };
-
-  const notificationError = async () => {
-    toast.error('Falha no envio da requisição');
-  };
-
-  const handleShowModalConfirm = () => {
+   const handleShowModalConfirm = () => {
     setShowModalConfirm(true);
   };
 
@@ -68,14 +71,14 @@ export function ButtonBlocked({ title, sala, vlan }: ButtonBlockedProps) {
       });
 
       if (response.ok) {
-        notificationSuccess();
+        notificationSuccess("Requisição enviada com sucesso!");
         toggleBlocked();
       } else {
-        notificationError();
+        notificationError('Falha no envio da requisição');
         console.error('Falha ao enviar os dados para o backend.');
       }
     } catch (error) {
-      notificationError();
+      notificationError('Falha no envio da requisição');
       console.error('Erro ao enviar os dados para o backend:', error);
     }
   };

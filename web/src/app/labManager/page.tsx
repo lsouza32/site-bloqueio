@@ -10,9 +10,7 @@ import { Card } from '@/components/Card'
 import { Header } from '@/components/Header'
 import { SalaType, agruparSalasPorBloco } from '@/utils/functions'
 import { fetchSalas } from '@/utils/api';
-
-
-
+import { ModalManager } from '@/components/ModalManager';
 
 
 export default function LabManager () {
@@ -20,6 +18,9 @@ export default function LabManager () {
   const router = useRouter();
   const [salas, setSalas] = useState<SalaType[]>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showModalManager, setShowModalManager] = useState(false);
+
 
   const salasAgrupadas = agruparSalasPorBloco(salas);
 
@@ -29,6 +30,9 @@ export default function LabManager () {
     router.push('/login');
   }
 
+  function handleManager(){
+    setShowModalManager(true)
+  }
 
   useEffect(() => {
     const cookies = nookies.get();
@@ -44,11 +48,13 @@ export default function LabManager () {
           Authorization: `Bearer ${token}`,
         },
       })
-        .then((response) => {
+        .then(async(response) => {
           if (!response.ok) {
             throw new Error('Token inválido');
           }
+          const { userAdmin } = await response.json();
           setIsAuthorized(true); // Autorizar o acesso se o token for válido
+          setIsAdmin(userAdmin);
         })
         .catch(() => {
           router.push('/login'); // Redirecionar para a página de login se ocorrer algum erro
@@ -59,7 +65,7 @@ export default function LabManager () {
     // useEffect para buscar as salas 
     useEffect(() => {
       fetchSalas(setSalas);
-    }, []); // Executar uma vez no carregamento do componente
+    }, [salas]); // Executar uma vez no carregamento do componente
 
 
   if (!isAuthorized) {
@@ -90,24 +96,37 @@ export default function LabManager () {
             <span className="mt-2 font-alt">Bem-vindo</span>
           </div>
 
+          {isAdmin &&
+            <button 
+              className="bg-yellow-50 text-black-50 text-base px-4 py-2 mx-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 "
+              onClick={handleManager}
+                >Gerenciar salas
+            </button>
+          }
+
+          {showModalManager &&
+            <ModalManager setShowModalManager={setShowModalManager} salasAgrupadas= {salasAgrupadas}/>
+          }
+
           {/* Botão de logout no canto superior direito */}
-          <button className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 "
-          onClick={handleSignOut}>Logout</button>
+          <button 
+            className="bg-yellow-50 text-black-50 text-base px-4 py-2 rounded font-alt min-w-[140px] min-h-[44px] hover:bg-yellow-300 "
+            onClick={handleSignOut}>
+              Logout
+          </button>
         </div>
       </Header>
       
       {/*body Cards*/}
       <div className=' block  min-w=[300px] min-h-[200px] items-center justify-center'>
 
-        
-
-      {Object.entries(salasAgrupadas).map(([bloco, salasDoBloco]) => (
-        <div key={bloco} className='flex flex-wrap items-center justify-center'>
-          {salasDoBloco.map((sala) => (
-            <Card key={sala.lab} sala={sala.lab} vlan={sala.vlan} />
-          ))}
-        </div>
-      ))}
+        {Object.entries(salasAgrupadas).map(([bloco, salasDoBloco]) => (
+          <div key={bloco} className='flex flex-wrap items-center justify-center'>
+            {salasDoBloco.map((sala) => (
+              <Card key={sala.lab} sala={sala.lab} vlan={sala.vlan} salaBlocked={sala.isBlocked} />
+            ))}
+          </div>
+        ))}
 
       </div>
 

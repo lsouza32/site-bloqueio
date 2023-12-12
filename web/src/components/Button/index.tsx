@@ -58,16 +58,13 @@ export function Button({ title, sala, vlan }: ButtonProps) {
     }
   };
 
-
     return (
       <>
         <button className={'bg-yellow-50 hover:bg-yellow-300 px-4 py-2 rounded font-sans'}
-        
           type="button" 
           onClick={()=>{
               handleShowModalConfirm();
           }}>
-  
           {actionButton}
         </button>
 

@@ -1,9 +1,19 @@
+import { toast } from 'react-toastify';
+
+
+export const notificationSuccess = async (msg: string) => {
+  toast.success(msg);
+};
+
+export const notificationError = async (msg: string) => {
+  toast.error(msg);
+};
+
 export interface SalaType{
   lab: string;
   vlan: number;
   isBlocked: boolean;
 }
-
 export const agruparSalasPorBloco = (salas: SalaType[]) => {
   const salasPorBloco: Record<string, SalaType[]> = {};
 

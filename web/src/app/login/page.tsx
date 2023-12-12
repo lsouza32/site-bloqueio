@@ -36,7 +36,7 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json();
         setCookie(undefined, 'nextauth.token', data.token , {
-          maxAge: 60 * 60 * 1, // expira em 1hr
+          maxAge: 60 * 60 * 6, // expira em 1hr
           path: '/'
         })
         // Autenticação bem-sucedida, redirecione para a próxima página

@@ -1,18 +1,14 @@
 // Função para criar VLAN
-type dbTypes={
-  vlan: number;
-  isBlocked: boolean
-}
 
-async function createVlan(vlan: number) {
+export async function createVlan(vlan: number, lab: string) {
   const response = await fetch('http://localhost:3001/api/db/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      lab,
       vlan,
-      isBlocked: true, 
     }),
   });
 
@@ -27,17 +23,14 @@ export async function readVlan(vlan: number) {
   if (response.ok) {
     return response.json();
   } else if (response.status === 404) {
-    // VLAN não encontrada, chamar a função createVlan
-    await createVlan(vlan);
-    // Agora, tentar novamente ler a VLAN recém-criada
-    return readVlan(vlan);
+    throw new Error('VLAN não encontrada');
   } else {
     throw new Error('Falha ao ler a VLAN');
   }
 }
 
 export async function updateVlan(vlan: number, isBlocked: boolean) {
-  const response = await fetch(`http://localhost:3001/api/update/${vlan}`, {
+  const response = await fetch(`http://localhost:3001/api/db/update/${vlan}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -50,4 +43,26 @@ export async function updateVlan(vlan: number, isBlocked: boolean) {
   }
 
   return response.json();
+}
+
+export async function deleteVlan(vlan: number) {
+  try {
+    const response = await fetch(`http://localhost:3001/api/db/delete/${vlan}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao excluir a VLAN');
+    }
+
+    // A resposta pode ser processada conforme necessário
+    const result = await response.json();
+    console.log('Registro excluído:', result);
+  } catch (error) {
+    throw new Error('Erro ao excluir vlan');
+    // Ou manipule o erro de outra forma, conforme necessário
+  }
 }

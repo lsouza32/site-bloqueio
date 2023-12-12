@@ -20,7 +20,7 @@ export function Header({ children }: HeaderProps) {
       </div>      
 
       <div className="bg-gray-100 py-4 px-10 mb-12">
-        {/*Linha zinha escuro*/}
+        {/*Linhazinha escuro*/}
       </div>    
 
     </>
