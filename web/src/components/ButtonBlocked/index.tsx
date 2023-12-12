@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { ModalConfirm } from '../ModalConfirm';
 import { readVlan, updateVlan} from '../../utils/BDEndpoints'
 import { notificationError, notificationSuccess } from '@/utils/functions';
+import { handleSubmit } from '@/utils/api';
 
 interface ButtonBlockedProps {
   title: string;
@@ -55,34 +56,6 @@ export function ButtonBlocked({ title, sala, vlan, salaBlocked }: ButtonBlockedP
     setShowModalConfirm(true);
   };
 
-  const handleSubmit = async () => {
-    try {
-      const dataToSend = {
-        vlan: vlan,
-        action: actionButton,
-      };
-
-      const response = await fetch(`http://localhost:3001/api/actions/${actionButton.replace(/\s/g, '-').toLowerCase()}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (response.ok) {
-        notificationSuccess("Requisição enviada com sucesso!");
-        toggleBlocked();
-      } else {
-        notificationError('Falha no envio da requisição');
-        console.error('Falha ao enviar os dados para o backend.');
-      }
-    } catch (error) {
-      notificationError('Falha no envio da requisição');
-      console.error('Erro ao enviar os dados para o backend:', error);
-    }
-  };
-
   return (
     <>
       <button
@@ -100,7 +73,7 @@ export function ButtonBlocked({ title, sala, vlan, salaBlocked }: ButtonBlockedP
           setShowModalConfirm={setShowModalConfirm}
           titleAction={actionButton}
           sala={sala}
-          handleSubmit={handleSubmit}
+          handleSubmit= {()=>handleSubmit(vlan, actionButton, toggleBlocked)}
         />
       }
     </>

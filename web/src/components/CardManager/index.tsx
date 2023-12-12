@@ -1,5 +1,3 @@
-import { deleteVlan } from '@/utils/BDEndpoints';
-import { notificationError, notificationSuccess } from '@/utils/functions';
 import { ReactNode, useState } from 'react';
 
 interface CardManagerProps {
